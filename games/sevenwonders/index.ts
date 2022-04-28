@@ -6,6 +6,7 @@ import {IncomingWebhookSendArguments} from "@slack/webhook/dist/IncomingWebhook"
 const HISTORY_URL = "https://ja.boardgamearena.com/9/sevenwonders/sevenwonders/notificationHistory.html"
 
 type LogResponse = {
+    packet_id: string
     packet_type: string
     time: string
     data: RootLog[]
@@ -34,40 +35,52 @@ type HistoryResponse = {
 }
 
 export const check = async (notifyMinutes: number, tableId: number): Promise<IncomingWebhookSendArguments | undefined> => {
-    const res = await axios.get<HistoryResponse>(
-        HISTORY_URL,
-        {
-            params: {
-                table: tableId,
-                from: 148,
-                privateinc: 1,
-                history: 1
-            }
-        }
-    )
-
-    const data = res?.data?.data?.data
-    if (!data) {
-        return
-    }
-
-    const date = new Date();
-    const now = Math.floor( date.getTime()/ 1000)
-    const checkAfterTime = now - (notifyMinutes * 60)
     const NotifyLogs: LogResponse[] = []
-    for (const resKey in data) {
-        const d = data[resKey]
-        if (!d) {
-            continue
+    let from = 0
+    while (true) {
+        console.log("from", from)
+        const res = await axios.get<HistoryResponse>(
+            HISTORY_URL,
+            {
+                params: {
+                    table: tableId,
+                    from,
+                    privateinc: 1,
+                    history: 1
+                }
+            }
+        )
+        const data = res?.data?.data?.data
+        if (!data) {
+            console.error(res.data)
+            break
         }
-        if (d.packet_type != 'history') {
-            continue
+        const date = new Date();
+        const now = Math.floor( date.getTime()/ 1000)
+        const checkAfterTime = now - (notifyMinutes * 60)
+        let lastPacketId = from
+        for (const resKey in data) {
+            const d = data[resKey]
+            if (!d) {
+                continue
+            }
+            lastPacketId = Math.max(lastPacketId, Number(d.packet_id))
+            if (d.packet_type != 'history') {
+                continue
+            }
+            if (checkAfterTime >= Number(d.time)) {
+                continue
+            }
+            NotifyLogs.push(d)
         }
-        if (checkAfterTime >= Number(d.time)) {
-            continue
+
+        if (lastPacketId === from) {
+            break
         }
-        NotifyLogs.push(d)
+        console.log("lastPacketId", lastPacketId)
+        from = lastPacketId + 1
     }
+
     const attachments: MessageAttachment[] = []
 
     NotifyLogs.forEach((logResponse) => {
