@@ -1,0 +1,22 @@
+version: 1
+
+backend:
+  phases:
+    preBuild:
+      commands:
+        - npm install serverless -g
+        - npm install
+    build:
+      commands:
+        - sls deploy
+frontend:
+  phases:
+    preBuild:
+      commands:
+    build:
+      commands:
+    postBuild:
+      commands:
+  artifacts:
+    files:
+      - '**/*'

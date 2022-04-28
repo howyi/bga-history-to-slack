@@ -1,0 +1,58 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# NOT PHP
+*.php
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# production
+/build
+/.out
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+.eslintcache
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+#amplify
+web/amplify/\#current-cloud-backend
+web/amplify/.config/local-*
+web/amplify/mock-data
+web/amplify/backend/amplify-meta.json
+web/amplify/backend/awscloudformation
+web/.env
+build/
+dist/
+node_modules/
+aws-exports.js
+awsconfiguration.json
+
+exports.js
+.env
+
+#vscode
+.vscode
+
+#idea
+.idea
+
+.build
+
+## Generated tailwind css
+**/tailwind.out.css
+
+.serverless
+
+rendered/*
+!rendered/.gitkeep
