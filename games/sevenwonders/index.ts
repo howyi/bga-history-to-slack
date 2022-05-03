@@ -3,8 +3,6 @@ import axios from "axios";
 import {MessageAttachment} from "@slack/types";
 import {IncomingWebhookSendArguments} from "@slack/webhook/dist/IncomingWebhook";
 
-const HISTORY_URL = "https://ja.boardgamearena.com/9/sevenwonders/sevenwonders/notificationHistory.html"
-
 type LogResponse = {
     packet_id: string
     packet_type: string
@@ -34,13 +32,16 @@ type HistoryResponse = {
     }
 }
 
-export const check = async (notifyMinutes: number, tableId: number): Promise<IncomingWebhookSendArguments | undefined> => {
+export const check = async (notifyMinutes: number, tableRegion: number, tableId: number): Promise<IncomingWebhookSendArguments | undefined> => {
+
+    const HistoryUrl = `https://ja.boardgamearena.com/${tableRegion}/sevenwonders/sevenwonders/notificationHistory.html`
+
     const NotifyLogs: LogResponse[] = []
     let from = 0
     while (true) {
         console.log("from", from)
         const res = await axios.get<HistoryResponse>(
-            HISTORY_URL,
+            HistoryUrl,
             {
                 params: {
                     table: tableId,

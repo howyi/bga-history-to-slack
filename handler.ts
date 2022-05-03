@@ -7,6 +7,7 @@ const NOTIFY_MINUTES = process.env.NOTIFY_MINUTES
 const GAME_NAME = process.env.GAME_NAME
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL
 const TABLE_ID = process.env.TABLE_ID
+const TABLE_REGION = process.env.TABLE_REGION
 
 export const check: Handler = async (event, context, callback) => {
 
@@ -18,7 +19,7 @@ export const check: Handler = async (event, context, callback) => {
     let res: IncomingWebhookSendArguments | undefined
     switch (GAME_NAME) {
         case "7wonders":
-            res = await sevenwonders(Number(NOTIFY_MINUTES), Number(TABLE_ID))
+            res = await sevenwonders(Number(NOTIFY_MINUTES), (Number(TABLE_REGION)), Number(TABLE_ID))
             break
         default:
             break

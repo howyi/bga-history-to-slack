@@ -18,3 +18,4 @@ functions:
       SLACK_WEBHOOK_URL: ""
       TABLE_ID: ""
       NOTIFY_MINUTES: "5"
+      TABLE_REGION: "9"
