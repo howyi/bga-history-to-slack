@@ -123,7 +123,7 @@ export const check = async (notifyMinutes: number, tableRegion: number, tableId:
         return
     }
 
-    const link = "https://boardgamearena.com/9/sevenwonders?table=" + tableId
+    const link = `https://boardgamearena.com/${tableRegion}/sevenwonders?table=${tableId}`
     attachments.unshift({
         author_name: `7wonders (Table: ${tableId})`,
         author_link: link,
