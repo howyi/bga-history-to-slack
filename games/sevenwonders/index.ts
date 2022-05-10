@@ -40,24 +40,25 @@ export const check = async (notifyMinutes: number, tableRegion: number, tableId:
     let from = 0
     while (true) {
         console.log("from", from)
+        const params = {
+            table: tableId,
+            from,
+            privateinc: 1,
+            history: 1
+        }
+        console.log("History Request", HistoryUrl,params)
         const res = await axios.get<HistoryResponse>(
             HistoryUrl,
-            {
-                params: {
-                    table: tableId,
-                    from,
-                    privateinc: 1,
-                    history: 1
-                }
-            }
+            {params}
         )
         const data = res?.data?.data?.data
         if (!data) {
             console.error(res.data)
             break
         }
+        console.log("History Response", data)
         const date = new Date();
-        const now = Math.floor( date.getTime()/ 1000)
+        const now = Math.floor(date.getTime() / 1000)
         const checkAfterTime = now - (notifyMinutes * 60)
         let lastPacketId = from
         for (const resKey in data) {
@@ -147,8 +148,8 @@ const buildText = (log: Log): string => {
                 after = LANG_MAP[after]
             }
         }
-        const search = "\\\$\{"+before+"\}"
-        rawText = rawText.replace(new RegExp(search,'g'), after)
+        const search = "\\\$\{" + before + "\}"
+        rawText = rawText.replace(new RegExp(search, 'g'), after)
     })
     return rawText
 }
