@@ -39,7 +39,7 @@ aws-exports.js
 awsconfiguration.json
 
 exports.js
-.env
+.env*
 
 #vscode
 .vscode

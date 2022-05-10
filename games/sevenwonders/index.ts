@@ -1,5 +1,5 @@
 import {LANG_MAP} from './lang';
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import {MessageAttachment} from "@slack/types";
 import {IncomingWebhookSendArguments} from "@slack/webhook/dist/IncomingWebhook";
 
@@ -36,20 +36,44 @@ export const check = async (notifyMinutes: number, tableRegion: number, tableId:
 
     const HistoryUrl = `https://ja.boardgamearena.com/${tableRegion}/sevenwonders/sevenwonders/notificationHistory.html`
 
+    const response = await axios.get<string>(
+        `https://boardgamearena.com/${tableRegion}/sevenwonders`,
+        {params: {table: tableId}}
+    )
+    if (!response.data) {
+        return
+    }
+
+    const captured = /requestToken: '(\w+)'/.exec(response.data)
+    if (!captured || !captured[1] || !response.headers["set-cookie"]) {
+        return
+    }
+    const requestToken = captured[1]
+    const cookie = response.headers["set-cookie"].filter((s) => s.includes("PHPSESSID"))[0]
+    if (!cookie) {
+        return
+    }
+
     const NotifyLogs: LogResponse[] = []
     let from = 0
     while (true) {
         console.log("from", from)
-        const params = {
-            table: tableId,
-            from,
-            privateinc: 1,
-            history: 1
+        const requestConfig: AxiosRequestConfig = {
+            params: {
+                table: tableId,
+                from,
+                privateinc: 1,
+                history: 1
+            },
+            headers: {
+                Cookie: cookie,
+                "x-request-token": requestToken,
+            }
         }
-        console.log("History Request", HistoryUrl,params)
+        console.log("History Request", HistoryUrl,requestConfig)
         const res = await axios.get<HistoryResponse>(
             HistoryUrl,
-            {params}
+            requestConfig
         )
         const data = res?.data?.data?.data
         if (!data) {
