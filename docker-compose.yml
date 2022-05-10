@@ -1,0 +1,11 @@
+version: '3.7'
+
+volumes:
+  logs:
+    driver: local
+
+services:
+  bga:
+    build: .
+    volumes:
+      - .:/var/lib/bga
