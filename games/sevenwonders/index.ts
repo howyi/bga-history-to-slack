@@ -32,6 +32,17 @@ type HistoryResponse = {
     }
 }
 
+const REPLACE: {[key in string]: string} = {
+    "<div class=\"siconmini sicon_S\"></div>": ":sicon_s:",
+    "<div class=\"siconmini sicon_C\"></div>": ":sicon_c:",
+    "<div class=\"siconmini sicon_G\"></div>": ":sicon_g:",
+    "<div class=\"siconmini sicon_L\"></div>": ":sicon_l:",
+    "<div class=\"siconmini sicon_O\"></div>": ":sicon_o:",
+    "<div class=\"siconmini sicon_P\"></div>": ":sicon_p:",
+    "<div class=\"siconmini sicon_W\"></div>": ":sicon_w:",
+    "<div class=\"siconmini sicon_mcoin\"></div>": ":sicon_mcoin:",
+}
+
 export const check = async (notifyMinutes: number, tableRegion: number, tableId: number): Promise<IncomingWebhookSendArguments | undefined> => {
 
     const HistoryUrl = `https://ja.boardgamearena.com/${tableRegion}/sevenwonders/sevenwonders/notificationHistory.html`
@@ -111,7 +122,7 @@ export const check = async (notifyMinutes: number, tableRegion: number, tableId:
 
     NotifyLogs.forEach((logResponse) => {
         logResponse.data.forEach((log) => {
-            const text = buildText(log)
+            const text = replaceOverwrite(buildText(log))
             attachments.push({
                 color: getColor(log.type),
                 text,
@@ -149,6 +160,15 @@ const getColor = (type: string): string => {
         default:
             return '#d7d7d7'
     }
+}
+
+
+const replaceOverwrite = (text: string): string => {
+    Object.keys(REPLACE).forEach((before) => {
+        const after = REPLACE[before]
+        text = text.replace(new RegExp(before, 'g'), after)
+    })
+    return text
 }
 
 const buildText = (log: Log): string => {

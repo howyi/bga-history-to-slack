@@ -17,6 +17,6 @@ frontend:
       commands:
     postBuild:
       commands:
-  artifacts:
+  artifacts:    
     files:
       - '**/*'
